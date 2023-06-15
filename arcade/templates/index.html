@@ -113,6 +113,10 @@
         <h1 class="logo">Semantris</h1>
         <p>Play the exciting word association game!</p>
         <a href="#" class="button">Start Game</a>
+        
+        {% for key, value in sorted_dict.items %}
+            <li>{{ key }}: {{ value }}</li>
+        {% endfor %}
     </div>
 </body>
 </html>

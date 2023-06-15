@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .utils import get_sorted_dict
 
 # Create your views here.
 
@@ -12,7 +13,8 @@ def register():
     pass
 
 def index(request):
-    return render(request, "index.html")
+    sorted_dict = get_sorted_dict()
+    return render(request, "index.html", {'sorted_dict': sorted_dict})
 
 def arcade_play():
     pass
