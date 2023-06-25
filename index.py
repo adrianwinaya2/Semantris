@@ -44,16 +44,16 @@ def index():
 @app.route('/play', methods=['POST'])
 def play():
     score = 0
-    out_array = {}
+    out_dicts = {}
 
     # Initialize out_array with words_arr
     for i in words_arr:
-        out_array[i] = None
+        out_dicts[i] = None
 
     # Random target
-    target = rand.choice(list(out_array.keys()))
+    target = rand.choice(list(out_dicts.keys()))
 
-    return render_template('play.html', score=score, words=list(out_array.keys()), target=target)
+    return render_template('play.html', score=score, words=list(out_dicts.keys()), target=target)
 
 
 @app.route('/check', methods=['POST'])
