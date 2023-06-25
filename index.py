@@ -8,6 +8,7 @@ import numpy as np
 import random as rand
 from tensorflow.python.ops.numpy_ops import np_config
 np_config.enable_numpy_behavior()
+import ast
 
 app = Flask(__name__)
 
@@ -60,52 +61,59 @@ def play():
 def check():
     answer = request.form['answer']
     score = int(request.form['score'])
-    out_array = {}
+    out_dicts = {}
 
     # Get the current state from the form data
-    out_array = request.form['out_array']
+    out_array_string = request.form['out_array']
+
+    # Convert string to list
+    out_array = ast.literal_eval(out_array_string)
+
+    # Change to dicts
+    for i in out_array:
+        out_dicts[i] = None
 
     # Check answer
-    if answer.lower() not in (word.lower() for word in out_array):
+    if answer.lower() not in (word.lower() for word in out_dicts):
         # Check similarity per word with answer
-        for i in out_array:
-            out_array[i] = similarity(answer, i)
+        for i in out_dicts:
+            out_dicts[i] = similarity(answer, i)
 
         # Sort dict
-        out_array = dict(sorted(out_array.items(), key=lambda x: x[1]))
+        out_dicts = dict(sorted(out_dicts.items(), key=lambda x: x[1]))
 
         # Check target placement
-        listed_out_array = list(out_array.keys())
+        listed_out_dicts = list(out_dicts.keys())
         target = request.form['target']
-        if target not in listed_out_array:
-            out_array.pop(listed_out_array[-1])  # Remove the last word
-            out_array[target] = None  # Add target to the list
+        if target not in listed_out_dicts:
+            out_dicts.pop(listed_out_dicts[-1])  # Remove the last word
+            out_dicts[target] = None  # Add target to the list
 
         # Check if the target is in the list again
-        target_index = listed_out_array.index(target)
-        if target_index > len(out_array) - 5:
+        target_index = listed_out_dicts.index(target)
+        if target_index > len(out_dicts) - 5:
             # Remove target
-            for i in range(target_index, len(out_array) - 5, -1):
-                del out_array[listed_out_array[i]]
+            for i in range(target_index, len(out_dicts) - 5, -1):
+                del out_dicts[listed_out_dicts[i]]
                 score += 1
 
             # Ensure there are still 10 words in the array
-            while len(out_array) < 10:
+            while len(out_dicts) < 10:
                 index = rand.randint(1, data_common.shape[0] - 1)
                 word = data_common['common_noun'][index]
-                if word not in out_array:
-                    out_array[word] = None
+                if word not in out_dicts:
+                    out_dicts[word] = None
 
             # Random target
-            target = rand.choice(list(out_array.keys()))
+            target = rand.choice(list(out_dicts.keys()))
 
-        # Convert out_array to JSON string
-        out_array_json = json.dumps(listed_out_array)
+        # # Convert out_dicts to JSON string
+        # out_dicts_json = json.dumps(listed_out_dicts)
 
-        return render_template('play.html', score=score, words=out_array.keys(), target=target, out_array=out_array_json)
+        return render_template('play.html', score=score, words=list(out_dicts.keys()), target=target)
 
     else:
-        return render_template('play.html', score=score, words=out_array.keys(), target=request.form['target'], error='Word already in array')
+        return render_template('play.html', score=score, words=out_array, target=request.form['target'], error='Word already in array')
 
 
 if __name__ == '__main__':
