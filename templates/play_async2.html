@@ -20,7 +20,7 @@
 
                 var wordsHtml = '';
                 response.words.forEach(function(word) {
-                    wordsHtml += word == target ? `<li class="target">${word}</li>` : `<li>${word}</li>`;
+                    wordsHtml += word == response.target ? `<li class="target">${word}</li>` : `<li>${word}</li>`;
                 });
 
                 $('#words').html(wordsHtml);
