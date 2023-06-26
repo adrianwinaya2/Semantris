@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Game</title>
+    <style>
+        .match {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Game</h1>
+    <h2>Score: {{ session.score }}</h2>
+    <h3>Guess the Word:</h3>
+    <ul>
+        {% for word in session.words %}
+            <li {% if word == session.target %}class="match"{% endif %}>{{ word }}</li>
+        {% endfor %}
+    </ul>
+    <p>Enter a word:</p>
+    <form action="/check" method="post">
+        <input autofocus type="text" name="answer">
+        <input type="submit" value="Submit">
+    </form>
+    {% if session.error %}
+        <p>{{ session.error }}</p>
+    {% endif %}
+</body>
+</html>
