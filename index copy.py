@@ -39,15 +39,7 @@ def fill_words(words, history, target):
     target = rand.choice(words[:-4])
     return words, history, target
 
-# ! VARIABLE SETTINGS
-# @app.before_first_request
-# def initialize():
-#     session['score'] = 0
-#     session['target'] = ''
-#     session['words'] = []
-#     session['history'] = []
-#     session['error'] = None
-
+# ! VARIABLE SETTINGS):
 @app.before_request
 def remove_error():
     session['error'] = None
