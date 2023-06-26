@@ -36,17 +36,17 @@ def fill_words(words, history, target):
         if word.lower() not in history:
             words.insert(0, word)
             history.append(word)
-    target = rand.choice(words)
+    target = rand.choice(words[:-4])
     return words, history, target
 
 # ! VARIABLE SETTINGS
-@app.before_first_request
-def initialize():
-    session['score'] = 0
-    session['target'] = ''
-    session['words'] = []
-    session['history'] = []
-    session['error'] = None
+# @app.before_first_request
+# def initialize():
+#     session['score'] = 0
+#     session['target'] = ''
+#     session['words'] = []
+#     session['history'] = []
+#     session['error'] = None
 
 @app.before_request
 def remove_error():
@@ -55,10 +55,16 @@ def remove_error():
 # ! ROUTING
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index2.html')
 
 @app.route('/play2', methods=['POST'])
 def play2():
+    session['score'] = 0
+    session['target'] = ''
+    session['words'] = []
+    session['history'] = []
+    session['error'] = None
+
     session['words'], session['history'], session['target'] = fill_words(session['words'], session['history'], session['target'])
     return render_template('play2.html')
 
@@ -75,7 +81,7 @@ def play():
     sorted_arr = list(sorted_dict.keys())
 
     if session['target'] not in sorted_arr:
-        sorted_dict.popitem()  # Remove the last word
+        sorted_dict.pop()  # Remove the last word
         sorted_dict[session['target']] = None  # Add target to the list
 
     # If the target is top 4
