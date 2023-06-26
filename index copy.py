@@ -42,7 +42,7 @@ def fill_words(words, history, target):
 # ! VARIABLE SETTINGS):
 @app.before_request
 def remove_error():
-    session['error'] = None
+    session['error'] = ''
     
 # ! ROUTING
 @app.route('/')
@@ -55,10 +55,10 @@ def play2():
     session['target'] = ''
     session['words'] = []
     session['history'] = []
-    session['error'] = None
+    session['error'] = ''
 
     session['words'], session['history'], session['target'] = fill_words(session['words'], session['history'], session['target'])
-    return render_template('play2.html')
+    return render_template('play_async3.html')
 
 @app.route('/check', methods=['POST'])
 def play():
@@ -66,7 +66,7 @@ def play():
     answer = str(request.form['answer']).lower()
     if answer in session['words']:
         session['error'] = {'message': 'Word already exists!', 'err_word': answer}
-        return render_template('play2.html')
+        return render_template('play_async3.html')
         
     words_dict = {w: similarity(answer, w) for w in session['words']}
     sorted_dict = dict(sorted(words_dict.items(), key=lambda x: x[1]))
@@ -82,11 +82,11 @@ def play():
 
     if rank <= pop_boundary:
         sorted_arr = sorted_arr[target_index + 1:]
-        print(sorted_arr)
         session['score'] += target_index + 1
         session['words'], session['history'], session['target'] = fill_words(sorted_arr, session['history'], session['target'])
+        print(session['words'])
 
-    return render_template('play2.html')
+    return render_template('play_async3.html')
 
 if __name__ == '__main__':
     # Mac OS kadang nabrak port 5000 maka pakai port 8000

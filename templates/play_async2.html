@@ -14,17 +14,17 @@
         $(document).ready(function() {
             // Function to update the game interface with the response data
             function updateGameInterface(response) {
+
                 $('#score').text(response.score);
                 $('#target').text(response.target);
+
                 var wordsHtml = '';
                 response.words.forEach(function(word) {
-                    if (word.toLowerCase() === response.target.toLowerCase()) {
-                        wordsHtml += '<li class="target">' + word + '</li>';
-                    } else {
-                        wordsHtml += '<li>' + word + '</li>';
-                    }
+                    wordsHtml += word == target ? `<li class="target">${word}</li>` : `<li>${word}</li>`;
                 });
+
                 $('#words').html(wordsHtml);
+
                 if (response.error) {
                     $('#error').text(response.error);
                 } else {
@@ -52,13 +52,15 @@
             // Event listener for the submit button
             $('#submit-btn').click(function(e) {
                 e.preventDefault();
+
                 var answer = $('#answer').val();
                 var score = parseInt($('#score').text());
                 var words = [];
+                var target = $('#target').text();
+
                 $('#words li').each(function() {
                     words.push($(this).text());
                 });
-                var target = $('#target').text();
                 checkAnswer(answer, score, words, target);
     
                 // Clear the answer text field

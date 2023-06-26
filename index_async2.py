@@ -69,7 +69,6 @@ def play():
 def check():
     # Get the answer from the form data
     answer = str(request.form['answer']).lower()
-
     
     if answer in (word.lower() for word in session['words']):
         return jsonify({
@@ -80,19 +79,19 @@ def check():
         })
     
     else:
-        print(session['words'])
+        print("Unsorted : ", session['words'])
         words_dict = {w: similarity(answer, w) for w in session['words']}
         sorted_dict = dict(sorted(words_dict.items(), key=lambda x: x[1]))
         sorted_arr = list(sorted_dict.keys())
-        print(sorted_arr)
+        print(f"Sorted : ${sorted_arr}")
 
         # If the target is top 4
         target_index = sorted_arr.index(session['target'])
         rank = len(sorted_arr) - target_index
-        print(target_index)
+        print(rank)
 
         if rank <= pop_boundary:
-            sorted_arr = sorted_arr[target_index + 1:]
+            del sorted_arr[-pop_boundary:target_index+1]
             session['score'] += (5 - rank)
             session['words'], session['history'], session['target'] = fill_words(sorted_arr, session['history'], session['target'])
         
@@ -101,7 +100,6 @@ def check():
             'words': session['words'],
             'target': session['target']
         })
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
