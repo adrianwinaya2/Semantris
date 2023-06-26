@@ -3,16 +3,65 @@
 <head>
     <title>Play</title>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script src="static/anime-master/lib/anime.es.js"></script>
+    <script src="static/anime-master/lib/anime.js"></script>
+    <script src="static/anime-master/lib/anime.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+
     <style>
         .target {
             color: red;
         }
+        .word {
+            margin-left: 20px;
+        }
+        /*
+        .sorted-word {
+            transform: translateY(0);
+        } */
     </style>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Function to update the game interface with the response data
+
+            const wordContainer = document.getElementById('words');
+            const childNodes = wordContainer.querySelectorAll(":scope > *");
+
+            let word_post = [];
+            childNodes.forEach(c => {
+                word_post.push(c.offsetTop);
+                // console.log(`${c.textContent}: ${c.offsetTop}`);
+            });
+
+            function sorting_animation(sorted_words) {
+
+                var words = [];
+                document.querySelectorAll('.word').forEach(function(li) {
+                    words.push(li.textContent);
+                });
+
+                console.log(`Sorted : ${sorted_words}`);
+                console.log(`Random : ${words}`);
+
+                for (var i = 0; i < words.length; i++) {
+                    var word = childNodes[i].textContent;
+                    var index = sorted_words.indexOf(word);
+                    var distance = index - i;
+                    console.log(`${word}: ${index} - ${i} = ${distance}`)
+
+                    anime({
+                        targets: childNodes[i],
+                        translateY: distance * 34,
+                        duration: 3000,
+                        // delay: anime.stagger(100),
+                        loop: false
+                    });
+                }
+            }
+            
+            // =================================================================================================
+
             function updateGameInterface(response) {
 
                 $('#score').text(response.score);
@@ -20,7 +69,7 @@
 
                 var wordsHtml = '';
                 response.words.forEach(function(word) {
-                    wordsHtml += word == response.target ? `<li class="target">${word}</li>` : `<li>${word}</li>`;
+                    wordsHtml += word == response.target ? `<p class="target word">${word}</p>` : `<p class="word">${word}</p>`;
                 });
 
                 $('#words').html(wordsHtml);
@@ -31,9 +80,8 @@
                     $('#error').text('');
                 }
             }
-    
-            // Function to handle the check request
-            function checkAnswer(answer, score, words, target) {
+            
+            function checkAnswer(answer) {
                 $.ajax({
                     url: '/check',
                     type: 'POST',
@@ -41,27 +89,23 @@
                         answer: answer
                     },
                     success: function(response) {
-                        updateGameInterface(response);
+                        sorting_animation(response.sorted);
+
+                        setTimeout(() => {
+                            updateGameInterface(response);
+                        }, 2000);   
                     },
                     error: function() {
                         console.log('Error occurred during check request.');
                     }
                 });
             }
-    
-            // Event listener for the submit button
+
             $('#submit-btn').click(function(e) {
                 e.preventDefault();
 
                 var answer = $('#answer').val();
-                var score = parseInt($('#score').text());
-                var words = [];
-                var target = $('#target').text();
-
-                $('#words li').each(function() {
-                    words.push($(this).text());
-                });
-                checkAnswer(answer, score, words, target);
+                checkAnswer(answer);
     
                 // Clear the answer text field
                 $('#answer').val('');
@@ -80,11 +124,12 @@
     <h1>Play</h1>
     <p>Score: <span id="score">{{ session.score }}</span></p>
     <p>Target: <span id="target">{{ session.target }}</span></p>
-    <ul id="words">
+    <div id="words">
         {% for word in session.words %}
-            <li {% if word.lower() == session.target.lower() %}class="target"{% endif %}>{{ word }}</li>
+            <p class="{% if word.lower() == session.target.lower() %}target {% endif %}word">{{ word }}</p>
         {% endfor %}
-    </ul>
+    </div>
+    <hr>
     <p id="error">{{ session.error }}</p>
     <form>
         <label for="answer">Answer:</label>

@@ -83,6 +83,7 @@ def check():
         words_dict = {w: similarity(answer, w) for w in session['words']}
         sorted_dict = dict(sorted(words_dict.items(), key=lambda x: x[1]))
         sorted_arr = list(sorted_dict.keys())
+        sorted_list = sorted_arr.copy()
         print(f"Sorted : ${sorted_arr}")
 
         # If the target is top 4
@@ -98,6 +99,7 @@ def check():
         return jsonify({
             'score': session['score'],
             'words': session['words'],
+            'sorted': sorted_list,
             'target': session['target']
         })
 
