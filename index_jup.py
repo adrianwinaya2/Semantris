@@ -56,6 +56,11 @@ def index():
 def gameOver():
     return render_template('gameover_jup.html')
 
+# Route to serve the video file
+@app.route('/background.mp4')
+def send_video():
+    return send_file('templates/background.mp4', mimetype='video/mp4')
+
 @app.route('/play', methods=['POST'])
 def play():
     session['score'] = 0
@@ -106,11 +111,6 @@ def check():
             'words': session['words'],
             'target': session['target']
         })
-
-# Route to serve the video file
-@app.route('/background.mp4')
-def send_video():
-    return send_file('templates/background.mp4', mimetype='video/mp4')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
