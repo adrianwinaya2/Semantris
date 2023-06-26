@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Play</title>
+
+    <style>
+        .target {
+            color: red;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to update the game interface with the response data
+            function updateGameInterface(response) {
+                $('#score').text(response.score);
+                $('#target').text(response.target);
+                var wordsHtml = '';
+                response.words.forEach(function(word) {
+                    if (word.toLowerCase() === response.target.toLowerCase()) {
+                        wordsHtml += '<li class="target">' + word + '</li>';
+                    } else {
+                        wordsHtml += '<li>' + word + '</li>';
+                    }
+                });
+                $('#words').html(wordsHtml);
+                if (response.error) {
+                    $('#error').text(response.error);
+                } else {
+                    $('#error').text('');
+                }
+            }
+    
+            // Function to handle the check request
+            function checkAnswer(answer, score, words, target) {
+                $.ajax({
+                    url: '/check',
+                    type: 'POST',
+                    data: {
+                        answer: answer,
+                        score: score,
+                        out_array: JSON.stringify(words),
+                        target: target
+                    },
+                    success: function(response) {
+                        updateGameInterface(response);
+                    },
+                    error: function() {
+                        console.log('Error occurred during check request.');
+                    }
+                });
+            }
+    
+            // Event listener for the submit button
+            $('#submit-btn').click(function(e) {
+                e.preventDefault();
+                var answer = $('#answer').val();
+                var score = parseInt($('#score').text());
+                var words = [];
+                $('#words li').each(function() {
+                    words.push($(this).text());
+                });
+                var target = $('#target').text();
+                checkAnswer(answer, score, words, target);
+    
+                // Clear the answer text field
+                $('#answer').val('');
+    
+                // Turn off autocomplete/recommendations for the answer field
+                $('#answer').attr('autocomplete', 'off');
+                $('#answer').attr('autocorrect', 'off');
+                $('#answer').attr('autocapitalize', 'off');
+                $('#answer').attr('spellcheck', 'false');
+            });
+        });
+    </script>
+    
+</head>
+<body>
+    <h1>Play</h1>
+    <p>Score: <span id="score">{{ score }}</span></p>
+    <p>Target: <span id="target">{{ target }}</span></p>
+    <ul id="words">
+        {% for word in words %}
+            <li {% if word.lower() == target.lower() %}class="target"{% endif %}>{{ word }}</li>
+        {% endfor %}
+    </ul>
+    <p id="error">{{ error }}</p>
+    <form>
+        <label for="answer">Answer:</label>
+        <input type="text" id="answer" name="answer">
+        <button type="submit" id="submit-btn">Check</button>
+    </form>
+</body>
+</html>
