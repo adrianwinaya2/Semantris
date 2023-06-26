@@ -52,7 +52,7 @@ def play():
         out_dicts[i] = None
 
     # Random target
-    target = rand.choice(list(out_dicts.keys()))
+    target = rand.choice(list(out_dicts.keys())[:-4])
 
     return render_template('play.html', score=score, words=list(out_dicts.keys()), target=target)
 
@@ -105,7 +105,7 @@ def check():
                     out_dicts[word] = None
 
             # Random target
-            target = rand.choice(list(out_dicts.keys()))
+            target = rand.choice(list(out_dicts.keys())[:-4])
 
         # # Convert out_dicts to JSON string
         # out_dicts_json = json.dumps(listed_out_dicts)
