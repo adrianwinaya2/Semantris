@@ -174,7 +174,7 @@
             // UPDATE GAME INTERFACE ======================
             function updateGameInterface(response) {
 
-                $('#score').text(response.score);
+                $('#score').text("Score: " + response.score);
                 $('#target').text(response.target);
                 set_words(response.words, response.target);
             }
