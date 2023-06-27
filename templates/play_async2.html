@@ -9,132 +9,299 @@
     <script src="static/anime-master/lib/anime.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
     <style>
+        /* JUPRI */
+        ul {
+            list-style: none;
+        }
+
+        #background-video {
+            height: 100vh;
+            width: 100vw;
+            object-fit: cover;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
         .target {
             color: red;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
         }
+
+        .form * {
+            margin: auto;
+        }
+
+        #words {
+            padding-inline-start: 0;
+            padding: 10px 0;
+        }
+
         .word {
-            margin-left: 20px;
+            font-size: 24px;
+            text-align: center;
+            justify-content: center;
         }
-        /*
-        .sorted-word {
-            transform: translateY(0);
-        } */
+
+        /* Additional CSS styling */
+        body {
+            padding: 20px;
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 75%;
+            align-items: center;
+        }
+
+        .word-container {
+            position: relative;
+        }
+
+        .top-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #score {
+            margin-left: 0px;
+        }
+
+        #error {
+            color: red;
+            font-style: italic;
+        }
+        .green-box {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: 25%;
+            height: 150px;
+            background-color: green;
+            z-index: -1;
+
+            opacity: 0.4;
+            border-top: 3px solid rgb(255, 255, 255);
+            border-radius: 5px;
+        }   
     </style>
 
     <script>
         $(document).ready(function() {
 
             const wordContainer = document.getElementById('words');
-            const childNodes = wordContainer.querySelectorAll(":scope > *");
+            let childNodes = wordContainer.querySelectorAll(":scope > *");
+                
+            // let word_post = [];
+            // childNodes.forEach(c => {
+            //     word_post.push(c.offsetTop);
+            //     // console.log(`${c.textContent}: ${c.offsetTop}`);
+            // });
 
-            let word_post = [];
-            childNodes.forEach(c => {
-                word_post.push(c.offsetTop);
-                // console.log(`${c.textContent}: ${c.offsetTop}`);
-            });
+            const gap = childNodes[1].offsetTop - childNodes[0].offsetTop;
 
-            function sorting_animation(sorted_words) {
-
-                var words = [];
-                document.querySelectorAll('.word').forEach(function(li) {
-                    words.push(li.textContent);
+            // SET WORDS =================================
+            function set_words(words_arr, target) {
+                var wordsHtml = '';
+                words_arr.forEach(function(word) {
+                    if (word == target) {
+                        wordsHtml += `<li class=" target">${word}</li>`;
+                    } else {
+                        wordsHtml += `<li class=" word">${word}</li>`;
+                    }
                 });
+                $('#words').html(wordsHtml);
+            }
+
+            // SORTING ANIMATION ==========================
+            function sorting_animation(sorted_words, random_words) {
 
                 console.log(`Sorted : ${sorted_words}`);
-                console.log(`Random : ${words}`);
+                console.log(`Random : ${random_words}`);
 
-                for (var i = 0; i < words.length; i++) {
+                for (var i = 0; i < random_words.length; i++) {
                     var word = childNodes[i].textContent;
                     var index = sorted_words.indexOf(word);
                     var distance = index - i;
-                    console.log(`${word}: ${index} - ${i} = ${distance}`)
 
                     anime({
                         targets: childNodes[i],
-                        translateY: distance * 34,
-                        duration: 3000,
+                        translateY: distance * gap,
+                        duration: 800,
                         // delay: anime.stagger(100),
+                        easing: "linear",
                         loop: false
                     });
                 }
             }
-            
-            // =================================================================================================
 
+            // NEXT ROUND ANIMATION =======================
+            // anime({
+            //     targets: childNodes[i],
+            //     translateY: -gap,
+            //     duration: 800,
+            //     // delay: anime.stagger(100),
+            //     easing: "linear",
+            //     loop: false
+            // });
+            function next_animation() {
+                childNodes = wordContainer.querySelectorAll(":scope > *");
+                target = $('.target').text();
+                
+                for (var i = 6; i < 10; i++) {
+                    console.log(childNodes[i]);
+                    childNodes[i].classList.add('animate__animated', 'animate__backOutLeft');
+
+                    if (childNodes[i].textContent == target) {
+                        break;
+                    }
+                }
+            }
+            
+            // UPDATE GAME INTERFACE ======================
             function updateGameInterface(response) {
 
                 $('#score').text(response.score);
                 $('#target').text(response.target);
-
-                var wordsHtml = '';
-                response.words.forEach(function(word) {
-                    wordsHtml += word == response.target ? `<p class="target word">${word}</p>` : `<p class="word">${word}</p>`;
-                });
-
-                $('#words').html(wordsHtml);
-
-                if (response.error) {
-                    $('#error').text(response.error);
-                } else {
-                    $('#error').text('');
-                }
+                set_words(response.words, response.target);
             }
             
+            // CHECK ANSWER ===============================
             function checkAnswer(answer) {
-                $.ajax({
-                    url: '/check',
-                    type: 'POST',
-                    data: {
-                        answer: answer
-                    },
-                    success: function(response) {
-                        sorting_animation(response.sorted);
-
-                        setTimeout(() => {
-                            updateGameInterface(response);
-                        }, 2000);   
-                    },
-                    error: function() {
-                        console.log('Error occurred during check request.');
-                    }
+                
+                var random_words = [];
+                childNodes = wordContainer.querySelectorAll(":scope > *");
+                childNodes.forEach(function(li) {
+                    random_words.push(li.textContent);
                 });
+
+                if (random_words.includes(answer)) {
+
+                    childNodes.forEach((child) => {
+                        if (child.textContent === answer) {
+                            child.classList.add('animate__animated', 'animate__flash');
+                            return;
+                        }
+                    });
+                    $('#error').text('Word already exists!');
+
+                } else {
+                    $.ajax({
+                        url: '/check',
+                        type: 'POST',
+                        data: {
+                            answer: answer
+                        },
+                        success: function(response) {
+                            sorting_animation(response.sorted, random_words);
+                            
+                            setTimeout(() => {
+                                set_words(response.sorted, $('.target').text());
+                            }, 1500);
+
+                            if (response.status == 'success') {
+                                setTimeout(() => {
+                                    next_animation();
+                                }, 1500);
+                            }
+                            
+                            setTimeout(() => {
+                                updateGameInterface(response);
+                            }, 1500);
+
+                        },
+                        error: function() {
+                            console.log('Error occurred during check request.');
+                        }
+                    });
+                }
+
             }
 
             $('#submit-btn').click(function(e) {
                 e.preventDefault();
+                $('#error').text('');
+
+                childNodes.forEach((child) => {
+                    if (child.classList.contains('animate__flash')) {
+                        child.classList.remove('animate__animated', 'animate__flash');
+                    }
+                });
 
                 var answer = $('#answer').val();
                 checkAnswer(answer);
     
                 // Clear the answer text field
                 $('#answer').val('');
-    
-                // Turn off autocomplete/recommendations for the answer field
-                $('#answer').attr('autocomplete', 'off');
-                $('#answer').attr('autocorrect', 'off');
-                $('#answer').attr('autocapitalize', 'off');
-                $('#answer').attr('spellcheck', 'false');
+
             });
+            
+            // Timer for redirection
+            // var secondsLeft = 30; // Set the initial countdown time in seconds
+            // var countdownTimer = setInterval(function () {
+            //     if (secondsLeft <= 0) {
+            //         clearInterval(countdownTimer);
+            //         window.location.href = '/gameover'; // Replace with your desired URL
+            //     } else {
+            //         $('#timer').text("Time Remaining: " + secondsLeft);
+            //         secondsLeft--;
+            //     }
+            // }, 1000); // Update the timer every second (1000 milliseconds)
+            
+            // Turn off autocomplete/recommendations for the answer field
+            $('#answer').attr('autocomplete', 'off');
+            $('#answer').attr('autocorrect', 'off');
+            $('#answer').attr('autocapitalize', 'off');
+            $('#answer').attr('spellcheck', 'false');
         });
     </script>
     
 </head>
 <body>
-    <h1>Play</h1>
-    <p>Score: <span id="score">{{ session.score }}</span></p>
-    <p>Target: <span id="target">{{ session.target }}</span></p>
-    <div id="words">
-        {% for word in session.words %}
-            <p class="{% if word.lower() == session.target.lower() %}target {% endif %}word">{{ word }}</p>
-        {% endfor %}
+    <video id="background-video" autoplay loop muted>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+
+    <div class="container">
+        <div class="top-container">
+            <h1 class="animate__animated animate__backInLeft" id="timer">Time Remaining: 30</h1>
+            <h1 class="animate__animated animate__backInRight" id="score">Score: {{ session.score }}</h1>
+        </div>
+        <div class="word-container">
+            <ul id="words">
+                {% for word in session.words %}
+                    {% if word.lower() == session.target.lower() %}
+                        <li class=" target">{{ word }}</li>
+                    {% else %}
+                        <li class=" word">{{ word }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <div class="green-box"></div>
+        </div>
+        <form class="animate__animated animate__jackInTheBox">
+            <div class="form-group form">
+                <input type="text" id="answer" name="answer" class="form-control w-25" autofocus placeholder="Answer">
+            </div>
+            <button type="submit" id="submit-btn" class="btn btn-primary" hidden>Check</button>
+        </form>
+        <p id="error"></p>
     </div>
-    <hr>
-    <p id="error">{{ session.error }}</p>
-    <form>
-        <label for="answer">Answer:</label>
-        <input type="text" id="answer" name="answer">
-        <button type="submit" id="submit-btn">Check</button>
-    </form>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
