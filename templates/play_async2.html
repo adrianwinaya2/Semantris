@@ -9,6 +9,7 @@
     <script src="static/anime-master/lib/anime.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
 
+    <!-- Framework untuk animation -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
@@ -99,7 +100,7 @@
 
     <script>
         $(document).ready(function() {
-
+            // GET WORDS DARI HTMLNYA ====================
             const wordContainer = document.getElementById('words');
             let childNodes = wordContainer.querySelectorAll(":scope > *");
                 
@@ -253,7 +254,7 @@
             var countdownTimer = setInterval(function () {
                 if (secondsLeft <= 0) {
                     clearInterval(countdownTimer);
-                    window.location.href = '/gameover'; // Replace with your desired URL
+                    window.location.href = '/gameover';
                 } else {
                     $('#timer').text("Time Remaining: " + secondsLeft);
                     secondsLeft--;
