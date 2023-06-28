@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
-        /* JUPRI */
         ul {
             list-style: none;
         }
@@ -52,7 +51,6 @@
             justify-content: center;
         }
 
-        /* Additional CSS styling */
         body {
             padding: 20px;
             color: white;
@@ -215,6 +213,7 @@
                             if (response.status == 'success') {
                                 setTimeout(() => {
                                     next_animation();
+                                    secondsLeft += 5;
                                 }, 1500);
                             }
                             
@@ -250,16 +249,16 @@
             });
             
             // Timer for redirection
-            // var secondsLeft = 30; // Set the initial countdown time in seconds
-            // var countdownTimer = setInterval(function () {
-            //     if (secondsLeft <= 0) {
-            //         clearInterval(countdownTimer);
-            //         window.location.href = '/gameover'; // Replace with your desired URL
-            //     } else {
-            //         $('#timer').text("Time Remaining: " + secondsLeft);
-            //         secondsLeft--;
-            //     }
-            // }, 1000); // Update the timer every second (1000 milliseconds)
+            var secondsLeft = 30; // Set the initial countdown time in seconds
+            var countdownTimer = setInterval(function () {
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    window.location.href = '/gameover'; // Replace with your desired URL
+                } else {
+                    $('#timer').text("Time Remaining: " + secondsLeft);
+                    secondsLeft--;
+                }
+            }, 1000); // Update the timer every second (1000 milliseconds)
             
             // Turn off autocomplete/recommendations for the answer field
             $('#answer').attr('autocomplete', 'off');
