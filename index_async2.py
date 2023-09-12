@@ -68,6 +68,10 @@ def gameOver():
 def send_video():
     return send_file('templates/background.mp4', mimetype='video/mp4')
 
+@app.route('/staticbackground.png')
+def send_image():
+    return send_file('templates/staticbackground.png', mimetype='image/png')
+
 # ! ROUTING
 @app.route('/play', methods=['POST'])
 def play():

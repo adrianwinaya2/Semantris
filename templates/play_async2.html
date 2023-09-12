@@ -117,9 +117,9 @@
                 var wordsHtml = '';
                 words_arr.forEach(function(word) {
                     if (word == target) {
-                        wordsHtml += `<li class=" target">${word}</li>`;
+                        wordsHtml += `<li class=" target animate__animated animate__fadeIn">${word}</li>`;
                     } else {
-                        wordsHtml += `<li class=" word">${word}</li>`;
+                        wordsHtml += `<li class=" word animate__animated animate__fadeIn">${word}</li>`;
                     }
                 });
                 $('#words').html(wordsHtml);
@@ -156,18 +156,27 @@
             //     easing: "linear",
             //     loop: false
             // });
-            function next_animation() {
+            function next_animation(response) {
                 childNodes = wordContainer.querySelectorAll(":scope > *");
+                console.log(childNodes[9]);
                 target = $('.target').text();
                 
-                for (var i = 6; i < 10; i++) {
-                    console.log(childNodes[i]);
-                    childNodes[i].classList.add('animate__animated', 'animate__backOutLeft');
-
-                    if (childNodes[i].textContent == target) {
-                        break;
+                for (var i = 0; i < 10; i++) {
+                    if (i % 2 == 0) {
+                        childNodes[i].classList.add('animate__animated', 'animate__fadeOutRight');
+                    } else {
+                        childNodes[i].classList.add('animate__animated', 'animate__fadeOutLeft');
                     }
+
+                    // if (childNodes[i].textContent == target) {
+                    //     break;
+                    // }
                 }
+
+                setTimeout(function() {
+                    updateGameInterface(response);
+                    secondsLeft += 5;
+                }, 1000);
             }
             
             // UPDATE GAME INTERFACE ======================
@@ -191,7 +200,13 @@
 
                     childNodes.forEach((child) => {
                         if (child.textContent === answer) {
+
+                            if (child.classList.contains('animate__fadeIn')) {
+                                child.classList.remove('animate__fadeIn');
+                            }
+
                             child.classList.add('animate__animated', 'animate__flash');
+                            console.log(child.classList)
                             return;
                         }
                     });
@@ -213,14 +228,14 @@
 
                             if (response.status == 'success') {
                                 setTimeout(() => {
-                                    next_animation();
+                                    next_animation(response);
                                     secondsLeft += 5;
                                 }, 1500);
                             }
                             
-                            setTimeout(() => {
-                                updateGameInterface(response);
-                            }, 1500);
+                            // setTimeout(() => {
+                            //     updateGameInterface(response);
+                            // }, 1500);
 
                         },
                         error: function() {
