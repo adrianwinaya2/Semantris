@@ -196,10 +196,28 @@
                     random_words.push(li.textContent);
                 });
 
-                if (random_words.includes(answer)) {
+                var target = $('.target').text();
 
+                var length = 0
+                if (target.length > answer.length) {
+                    length = answer.length;
+                } else {
+                    length = target.length;
+                }
+
+                var similarity = 0;
+
+                for (var i = 0; i < length; i++) {
+                    if (target.charAt(i).toLowerCase() == answer.charAt(i).toLowerCase()) {
+                        similarity++;
+                    }
+                }
+
+                if (similarity >= target.length - 1) {
+                    $('#error').text('Word is too similar!');
+                    
                     childNodes.forEach((child) => {
-                        if (child.textContent === answer) {
+                        if (child.textContent === target) {
 
                             if (child.classList.contains('animate__fadeIn')) {
                                 child.classList.remove('animate__fadeIn');
@@ -210,8 +228,6 @@
                             return;
                         }
                     });
-                    $('#error').text('Word already exists!');
-
                 } else {
                     $.ajax({
                         url: '/check',
@@ -232,10 +248,6 @@
                                     secondsLeft += 5;
                                 }, 1500);
                             }
-                            
-                            // setTimeout(() => {
-                            //     updateGameInterface(response);
-                            // }, 1500);
 
                         },
                         error: function() {
@@ -243,6 +255,54 @@
                         }
                     });
                 }
+                
+                // if (random_words.includes(answer)) {
+
+                //     childNodes.forEach((child) => {
+                //         if (child.textContent === answer) {
+
+                //             if (child.classList.contains('animate__fadeIn')) {
+                //                 child.classList.remove('animate__fadeIn');
+                //             }
+
+                //             child.classList.add('animate__animated', 'animate__flash');
+                //             console.log(child.classList)
+                //             return;
+                //         }
+                //     });
+                //     $('#error').text('Word already exists!');
+
+                // } else {
+                //     $.ajax({
+                //         url: '/check',
+                //         type: 'POST',
+                //         data: {
+                //             answer: answer
+                //         },
+                //         success: function(response) {
+                //             sorting_animation(response.sorted, random_words);
+                            
+                //             setTimeout(() => {
+                //                 set_words(response.sorted, $('.target').text());
+                //             }, 1500);
+
+                //             if (response.status == 'success') {
+                //                 setTimeout(() => {
+                //                     next_animation(response);
+                //                     secondsLeft += 5;
+                //                 }, 1500);
+                //             }
+                            
+                //             // setTimeout(() => {
+                //             //     updateGameInterface(response);
+                //             // }, 1500);
+
+                //         },
+                //         error: function() {
+                //             console.log('Error occurred during check request.');
+                //         }
+                //     });
+                // }
 
             }
 
