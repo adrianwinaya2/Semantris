@@ -229,7 +229,23 @@
                         }
                     });
                 } else {
-                    $.ajax({
+                    if (random_words.includes(answer)) {
+
+                        childNodes.forEach((child) => {
+                            if (child.textContent === answer) {
+
+                                if (child.classList.contains('animate__fadeIn')) {
+                                    child.classList.remove('animate__fadeIn');
+                                }
+
+                                child.classList.add('animate__animated', 'animate__flash');
+                                console.log(child.classList)
+                                return;
+                            }
+                        });
+                        $('#error').text('Word already exists!');
+                    } else {
+                        $.ajax({
                         url: '/check',
                         type: 'POST',
                         data: {
@@ -254,6 +270,7 @@
                             console.log('Error occurred during check request.');
                         }
                     });
+                    }
                 }
                 
                 // if (random_words.includes(answer)) {
