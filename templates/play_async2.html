@@ -175,7 +175,6 @@
 
                 setTimeout(function() {
                     updateGameInterface(response);
-                    secondsLeft += 5;
                 }, 1000);
             }
             
@@ -261,7 +260,10 @@
                             if (response.status == 'success') {
                                 setTimeout(() => {
                                     next_animation(response);
-                                    secondsLeft += 5;
+                                    secondsLeft += 4;
+                                    if (secondsLeft > 30) {
+                                        secondsLeft = 30;
+                                    }
                                 }, 1500);
                             }
 

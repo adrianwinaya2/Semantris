@@ -23,6 +23,8 @@ corpus = pd.read_csv('common_words.csv')
 pop_boundary = 4 # Untuk menghapus 4 kata terbawah
 max_words = 10 # Untuk menentukan jumlah kata yang akan ditampilkan
 
+team_name = ''
+
 def embed(input):
     return model(input)
 
@@ -76,6 +78,7 @@ def send_image():
 @app.route('/play', methods=['POST'])
 def play():
     # Initialize session
+    session['team_name'] = ''
     session['score'] = 0
     session['target'] = ''
     session['words'] = []

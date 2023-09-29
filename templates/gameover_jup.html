@@ -28,7 +28,7 @@
             text-align: center;
         }
 
-        input[type="submit"] {
+        .styled-input {
             border: 3px solid #2d6fff;
             border-radius: 10px;
             color: #2d6fff;
@@ -38,14 +38,27 @@
             text-align: center;
             text-decoration: none;
             background-color: transparent;
+            width: 30%;
         }
 
-        input[type="submit"]:hover {
+        .styled-button {
+            border: 3px solid #2d6fff;
+            border-radius: 10px;
+            color: #2d6fff;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 1% 2%;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        .styled-button:hover {
             border-color: #2d6fff;
             background-color: #2d6fff;
             color: white;
         }
-
     </style>
 </head>
 <body>
@@ -54,8 +67,39 @@
     </video>
     
     <h1>Score: {{ session.score }}</h1>
-    <form action="/play" method="post">
-        <input type="submit" value="Try Again">
+
+    <form id="scoreForm" action="https://irgl.petra.ac.id/main/api_score" method="POST" onsubmit="return confirm('Are you sure you want to upload the score? You can only submit once');">
+        <input type="text" id="nama_tim" name="nama_tim" class="styled-input" required placeholder="Team Name" autocomplete="off"><br>
+
+        <input type="hidden" id="nama_game" name="nama_game" value="semantris">
+
+        <input type="submit" value="Input Score" class="styled-button">
     </form>
+
+    <form action="/play" method="post">
+        <input type="submit" value="Try Again" class="styled-button">
+    </form>
+
+    <script>
+        document.getElementById("scoreForm").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+    
+            const form = event.target;
+            const formData = new FormData(form);
+    
+            fetch(form.action, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                form.style.display = "none";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
 </body>
 </html>
