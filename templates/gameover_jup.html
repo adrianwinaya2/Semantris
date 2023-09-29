@@ -84,16 +84,31 @@
         document.getElementById("scoreForm").addEventListener("submit", function(event) {
             event.preventDefault(); 
     
-            const form = event.target;
-            const formData = new FormData(form);
+            const formData = new FormData(document.getElementById("scoreForm"));
+            const formDataObject = {};
+            formData.forEach((value, key) => {
+                formDataObject[key] = value;
+            });
+
+            const form = document.getElementById("scoreForm");
     
-            fetch(form.action, {
+            fetch('/proxy/api_score', {
                 method: "POST",
-                body: formData
+                body: JSON.stringify(formDataObject),
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                console.log("Response Data: ", data);
+                // Disable all form elements
+                const formElements = form.elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    formElements[i].disabled = true;
+                }
+
                 form.style.display = "none";
             })
             .catch(error => {

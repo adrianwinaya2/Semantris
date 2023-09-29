@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session, send_file
+from flask_cors import CORS
 import json
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -8,10 +9,12 @@ import numpy as np
 import random as rand
 from tensorflow.python.ops.numpy_ops import np_config
 np_config.enable_numpy_behavior()
-import ast
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'semantris_secret_key'
+
+cors = CORS(app, resources={r"/main/api_score": {"origins": "*"}})
 
 # Load the model
 model = hub.load('model_text')
@@ -73,6 +76,20 @@ def send_video():
 @app.route('/staticbackground.png')
 def send_image():
     return send_file('templates/staticbackground.png', mimetype='image/png')
+
+@app.route('/proxy/api_score', methods=['POST'])
+def proxy_api_score():
+    # Get the request data from the frontend
+    request_data = request.get_json()
+    
+    # Define the target URL (the remote API)
+    target_url = 'https://irgl.petra.ac.id/main/api_score'
+    
+    # Forward the POST request to the remote server
+    response = requests.post(target_url, json=request_data)
+    
+    # Return the response from the remote server to the frontend
+    return jsonify(response.json()), response.status_code
 
 # ! ROUTING
 @app.route('/play', methods=['POST'])
