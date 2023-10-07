@@ -14,7 +14,7 @@ import requests
 app = Flask(__name__)
 app.secret_key = 'semantris_secret_key'
 
-cors = CORS(app, resources={r"/main/api_score": {"origins": "*"}})
+# cors = CORS(app, resources={r"/main/api_score": {"origins": "*"}})
 
 # Load the model
 model = hub.load('model_text')
@@ -77,19 +77,20 @@ def send_video():
 def send_image():
     return send_file('templates/staticbackground.png', mimetype='image/png')
 
-@app.route('/proxy/api_score', methods=['POST'])
-def proxy_api_score():
-    # Get the request data from the frontend
-    request_data = request.get_json()
+# @app.route('/proxy/api_score', methods=['POST'])
+# def proxy_api_score():
+#     # Get the request data from the frontend
+#     request_data = request.get_json()
+#     print(request_data)
     
-    # Define the target URL (the remote API)
-    target_url = 'https://irgl.petra.ac.id/main/api_score'
+#     # Define the target URL (the remote API)
+#     target_url = 'https://irgl.petra.ac.id/main/api_score'
     
-    # Forward the POST request to the remote server
-    response = requests.post(target_url, json=request_data)
+#     # Forward the POST request to the remote server
+#     response = requests.post(target_url, json=request_data)
     
-    # Return the response from the remote server to the frontend
-    return jsonify(response.json()), response.status_code
+#     # Return the response from the remote server to the frontend
+#     return jsonify(response.json()), response.status_code
 
 # ! ROUTING
 @app.route('/play', methods=['POST'])

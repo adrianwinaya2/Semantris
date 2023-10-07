@@ -68,19 +68,20 @@
     
     <h1>Score: {{ session.score }}</h1>
 
-    <form id="scoreForm" action="https://irgl.petra.ac.id/main/api_score" method="POST" onsubmit="return confirm('Are you sure you want to upload the score? You can only submit once');">
+    <!-- <form id="scoreForm" action="https://irgl.petra.ac.id/main/api_score" method="POST" onsubmit="return confirm('Are you sure you want to upload the score? You can only submit once');">
         <input type="text" id="nama_tim" name="nama_tim" class="styled-input" required placeholder="Team Name" autocomplete="off"><br>
 
         <input type="hidden" id="nama_game" name="nama_game" value="semantris">
+        <input type="hidden" id="score" name="score" value="{{ session.score }}">
 
         <input type="submit" value="Input Score" class="styled-button">
-    </form>
+    </form> -->
 
     <form action="/play" method="post">
         <input type="submit" value="Try Again" class="styled-button">
     </form>
 
-    <script>
+    <!-- <script>
         document.getElementById("scoreForm").addEventListener("submit", function(event) {
             event.preventDefault(); 
     
@@ -115,6 +116,6 @@
                 console.error("Error:", error);
             });
         });
-    </script>
+    </script> -->
 </body>
 </html>
